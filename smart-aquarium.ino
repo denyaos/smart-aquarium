@@ -26,7 +26,7 @@ RtcDS3231<TwoWire> Rtc(Wire);
 void setup () {
   //delay(5000);
   Serial.begin(115200);
-  Serial.println("\nSmart Aquarium v1.6");
+  Serial.println("\nSmart Aquarium");
   Serial.println("\n\nsetup BEGIN");
   setupWifi();
   setupRelays();
