@@ -8,25 +8,18 @@ void serveButtons() {
   serveFeedButton();  
 }
 
-unsigned long debounceDelay = 50;
-unsigned long feedBtnPressTime = 0;
-bool feedBtnWasPressed = false;  
-bool feedBtnPressHappenned = false;  
+unsigned long second = 1000; 
 
-void serveFeedButton() {
-  int read = digitalRead(feedBtnPin);
-  
-  if (read == HIGH) {
-    if (feedBtnPressTime == 0) {
-      feedBtnPressTime = millis();  
-    } else if ((millis() - feedBtnPressTime) > debounceDelay) {
-      feedBtnPressHappenned = true;
-    }
+void serveFeedButton() { 
+  static bool btnWasPressed = false;
+  static unsigned long dontReadHighUntil = millis();
+  if (digitalRead(feedBtnPin) == HIGH && !btnWasPressed && millis() > dontReadHighUntil) {
+    btnWasPressed = true;
+    dontReadHighUntil = millis() + second;
   } else {
-    feedBtnPressTime = 0;
-    if (feedBtnPressHappenned) {
+    if (btnWasPressed){
       toggleFeedingMode();
-      feedBtnPressHappenned = false;
+      btnWasPressed = false;
     }
   }
 }
