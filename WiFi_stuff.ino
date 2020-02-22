@@ -7,7 +7,7 @@ void setupWifi() {
 
 // send an NTP request to the time server at the given address
 unsigned long sendNTPpacket(IPAddress& address) {
-  Serial.print("sending NTP packet...");
+  Serial.print("Sending NTP packet...");
   // set all bytes in the buffer to 0
   memset(packetBuffer, 0, NTP_PACKET_SIZE);
   // Initialize values needed to form NTP request (see URL above for details on the packets)
@@ -27,35 +27,46 @@ unsigned long sendNTPpacket(IPAddress& address) {
   udp.endPacket();
 }
 
-void serveRequests() {
-  static bool isServerRunning = false;
-  if (isServerRunning) {
-    WiFiClient client = server.available(); // Check if a client has connected
-    if (!client) {return;}
-    
-    Serial.println("new client");
-    while(!client.available()){ // Wait until the client sends some data
-      delay(5);
-      Serial.print(".");
-    }
-
-    String response = handleRequest(client.readStringUntil('\r'));
-  
-    client.flush();
-    // Send the response to the client
-    client.print(response);
-    delay(1);
-    Serial.println("Client disonnected");
-
-    // The client will actually be disconnected when the function returns and 'client' object is detroyed
-  
-  } else {
-    if (WiFi.status() == WL_CONNECTED) {
-      server.begin();
-      isServerRunning = true;
-      Serial.print("Waiting for requests at ");
-      Serial.println(WiFi.localIP());
-    } 
-  }
+void requestLoop() {
+//  static bool isServerRunning = false;
+//  if (isServerRunning) {
+//    WiFiClient client = server.available(); // Check if a client has connected
+//    if (!client) {return;}
+//    
+//    Serial.println("new client");
+//    while(!client.available()){ // Wait until the client sends some data
+//      delay(5);
+//      Serial.print(".");
+//    }
+//
+//    String response = handleRequest(client.readStringUntil('\r'));
+//  
+//    client.flush();
+//    // Send the response to the client
+//    client.print(response);
+//    delay(1);
+//    Serial.println("Client disonnected");
+//
+//    // The client will actually be disconnected when the function returns and 'client' object is detroyed
+//  
+//  } else {
+//    if (WiFi.status() == WL_CONNECTED) {
+//      server.begin();
+//      isServerRunning = true;
+//      Serial.print("Waiting for requests at ");
+//      Serial.println(WiFi.localIP());
+//    } 
+//  }
   
 }
+
+
+void wifiStatusLoop() {
+    if (WiFi.status() == WL_CONNECTED) {
+      Serial.print("wifi connected. ip: ");
+      Serial.println(WiFi.localIP());
+    } else {
+      Serial.println("wifi not connected");
+    }
+}
+

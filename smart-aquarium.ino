@@ -19,27 +19,70 @@ WiFiUDP udp;
 WiFiServer server(80);
 
 Relays relays;
-ScheduledLeds leds(2); // pin #2
+ScheduledLeds leds(0); // pin gpio0 (D3)
 
 RtcDS3231<TwoWire> Rtc(Wire);
 
 void setup () {
-  //delay(5000);
+  
   Serial.begin(115200);
   Serial.println("\nSmart Aquarium");
   Serial.println("\n\nsetup BEGIN");
+  
   setupWifi();
-  setupRelays();
+  setupRelay();
   setupRTC();
   setupLeds();
   setupButtons();
+  
   Serial.println("setup END\n\n");
 }
 
 void loop () {
-  relays.checkRelaysState(getCurrentTime());
-  serveRequests();
-  serveLedLights();
-  serveButtons();
+  
+  if (Rtc.IsDateTimeValid()) {
+    RtcDateTime now = Rtc.GetDateTime();
+    relayLoop(now);
+    ledLoop(now);
+  }
+
+  rtcLoop();
+  requestLoop();
+  buttonLoop();
+
+  statusLoop();
+
   delay(20);
 }
+
+
+unsigned long lastStatusTime = 0;
+void statusLoop() {
+  if  ((millis() - lastStatusTime) > 10000) {
+
+    Serial.println("\n~~~~Status~~~~");
+    rtcStatusLoop();
+    wifiStatusLoop();
+    ledStatusLoop();
+    relayStatusLoop();
+    lastStatusTime = millis();  
+    Serial.println("~~~~~~~~~~~~~~\n");
+  }
+ 
+}
+
+/**
+d0 -> GPIO16
+d1 -> GPIO5
+d2 -> GPIO4
+d3 -> GPIO0
+d4 -> GPIO2
+
+d5 -> GPIO14
+d6 -> GPIO12
+d7 -> GPIO13
+d8 -> GPIO15
+*/
+
+
+
