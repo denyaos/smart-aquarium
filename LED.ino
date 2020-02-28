@@ -28,17 +28,9 @@ void setupLeds() {
 
 
 void ledLoop(const RtcDateTime& now) {
-
   int currentSecondOfDay = getSecondOfDay(now);
-  currentLedPower = calculateLedPower(currentSecondOfDay);
-
-  if (freezeUntil > millis()) {
-    setLedPower(percentToPower(ledFeedLevelInPercent));
-  } else if (currentSecondOfDay >= ledOnTime && currentSecondOfDay < ledOffTime) {
-    setLedPower(min(currentLedPower, percentToPower(ledMaxRateInPercent)));
-  } else {
-    setLedPower(LED_MIN);
-  }
+  calculateLedPower(currentSecondOfDay);
+  setLedPower();
 }
 
 int percentToPower(int percent) {
@@ -46,12 +38,17 @@ int percentToPower(int percent) {
 }
 
 int calculateLedPower(int currentSecondOfDay) {
-  int diffSeconds = min(currentSecondOfDay - ledOnTime, ledOffTime - currentSecondOfDay);
-  return max(LED_MIN, min(LED_MAX * diffSeconds / fadePeriod, LED_MAX));
+  int diffSeconds = min(max(0, currentSecondOfDay - ledOnTime), max(0, ledOffTime - currentSecondOfDay));
+  currentLedPower =  min(LED_MAX * diffSeconds / fadePeriod, LED_MAX);
+  if (freezeUntil > millis()) {
+    currentLedPower = max(percentToPower(ledFeedLevelInPercent), currentLedPower);
+  }
 }
 
-void setLedPower(int ledPower) {
-  analogWrite(ledPin, ledPower);
+void setLedPower() {
+  static int power = 0;
+  currentLedPower > power ? power++ : power--; 
+  analogWrite(ledPin, min(power, percentToPower(ledMaxRateInPercent)));
 }
 
 void ledStatusLoop() {
