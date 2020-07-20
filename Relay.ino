@@ -1,5 +1,5 @@
 int relayOnTime = 9;
-int relayOffTime = 22;
+int relayOffTime = 21;
 
 bool relayEnabled = true;
 int pumpRelayPin = 2; //GPIO2 = D4

@@ -1,9 +1,9 @@
-int ledOnTime = 12; //hour
-int ledOffTime = 22; //hour
+int ledOnTime = 10; //hour
+int ledOffTime = 21; //hour
 
-int fadePeriod = 60; //minutes
+int fadePeriod = 120; //minutes
 int ledFeedLevelInPercent = 30; //%
-int ledMaxRateInPercent = 90; // %
+int ledMaxRateInPercent = 80; // %
 
 const int LED_MAX = 1023;
 const int LED_MIN = 0;
